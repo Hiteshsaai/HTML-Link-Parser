@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"link"
 	"strings"
+
+	"../link"
 )
 
-var exampleHtml = `
+var exampleHTML = `
 <html>
 <body>
   <h1>Hello!</h1>
@@ -16,7 +17,7 @@ var exampleHtml = `
 
 func main() {
 
-	r := strings.NewReader(exampleHtml)
+	r := strings.NewReader(exampleHTML)
 
 	links, err := link.Parser(r)
 
@@ -24,6 +25,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("%v+", links)
+	fmt.Printf("%+v\n", links)
 
 }
