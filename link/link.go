@@ -3,13 +3,14 @@ package link
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
 
 // Link ... This Link represents the links in the HTML tag
 type Link struct {
-	href string
+	Href string
 	Text string
 }
 
@@ -22,10 +23,38 @@ func Parser(r io.Reader) ([]Link, error) {
 		return nil, err
 	}
 	nodes := linkNodes(doc)
+	var ret []Link
 	for _, node := range nodes {
-		fmt.Println(node)
+		ret = append(ret, buildLink(node))
 	}
-	return nil, nil
+	return ret, nil
+}
+
+func buildLink(n *html.Node) Link {
+	var ret Link
+	for _, a := range n.Attr {
+		if a.Key == "href" {
+			ret.Href = a.Key
+			break
+		}
+	}
+	ret.Text = getText(n)
+	return ret
+}
+
+func getText(n *html.Node) string {
+	if n.Type == html.TextNode {
+		return n.Data
+	}
+	if n.Type != html.ElementNode {
+		return ""
+	}
+
+	var text string
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		text += getText(c)
+	}
+	return strings.Join(strings.Fields(text), " ")
 }
 
 func linkNodes(n *html.Node) []*html.Node {
